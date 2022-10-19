@@ -1,6 +1,15 @@
 Where are we now?
 
 
+OCTOBER 20 2022
+testing my memory:
+
+cd /scratch16/agnanad1/cesm/be21BHISTf09g17CMIP6Historical01/
+case.setup
+case.build --clean
+case.build
+waiting for the build... takes a while, especially when you make the mistake of doing a keyboard stop
+
 Re: [rockfish #166008] CESM set env
 
 Ricardo de Souza Jacomini 
