@@ -9,6 +9,124 @@ case.setup
 case.build --clean
 case.build
 waiting for the build... takes a while, especially when you make the mistake of doing a keyboard stop
+built successfully
+case.submit
+run failed with invalid dependency
+
+-----------------------------
+October 20, 2022
+The most important was the module that I created called cesm/2.x, it will set up the the environment variables and packages needed to run CESM2.
+
+$ cat /data/apps/lmod/linux-centos8-x86_64/ext/cesm/2.x.lua
+
+Also, I created this folder with 5 files defining to basic settings files that CESM will read to run CESM., rockfish, compilers, machines etc.:
+
+$ ls ${HOME}/.cime/
+
+config 
+config_batch.xml 
+config_compilers.xml 
+config_machines.xml 
+config_pes.xml
+ 
+I added these 2 lines into the ~/.bashrc to load it automatically.
+
+module load cesm/2.x
+alias modver='perl -e"eval qq{use \$ARGV[0];\\\$v=\\\$\${ARGV[0]}::VERSION;};\ print\$@?qq{No module found\n}:\$v?qq{Version \$v\n}:qq{Found.\n};"$1'
+
+
+---
+>>>>> Ricardo's notes on Rockfish
+
+cat /data/apps/extern/anaconda/envs/cesm/2.x/READMEJHU
+# Instal CESM mdule on Rockfish System
+
+ml anaconda mamba
+
+conda create --prefix /data/apps/extern/anaconda/envs/cesm/2.x/
+conda activate /data/apps/extern/anaconda/envs/cesm/2.x
+
+mamba install python=3.9.12
+mamba install perl=5.32.1
+mamba install mpich=3.4.3 mpi netcdf-fortran
+mamba install -c conda-forge netcdf4
+mamba install ncurses make cmake
+mamba install liblapack libblas
+mamba install subversion svn git
+mamba install -c e3sm libpnetcdf
+mamba install -c bioconda perl-app-cpanminus
+mamba install -c bioconda perl-xml-parser-lite
+mamba install -c conda-forge sysroot_linux-64
+mamba install -c bioconda perl-xml-libxml
+
+# Perl modules required
+
+cpan Alien
+cpanm Alien::Build
+
+cpanm XML::LibXML --force
+
+# Add these 2 lines into the ~/.bashrc to load it automatically.
+
+module load cesm/2.x
+alias modver='perl -e"eval qq{use \$ARGV[0];\\\$v=\\\$\${ARGV[0]}::VERSION;};\ print\$@?qq{No module found\n}:\$v?qq{Version \$v\n}:qq{Found.\n};"$1'
+
+# load it
+source ~/.bashrc
+
+# Check the perl packages version installed
+modver Alien
+modver XML::LibXML
+
+
+# Install CESM on user own home environment
+
+cd ~
+git clone -b release-cesm2.2.0 https://github.com/ESCOMP/cesm.git cesm2 &&  cd cesm2 &&  ./manage_externals/checkout_externals
+
+cp $CESM_MODULE/fix/case_setup.py $CESMROOT/cime/config/cesm
+cp $CESM_MODULE/fix/config_inputdata.xml $CESMROOT/cime/config/cesm/config_inputdata.xml
+mkdir $HOME/.cime/
+cp $CESM_HOME/conf/* $HOME/.cime/
+
+# Example
+create_newcase --case mycase --compset X --res f19_g16
+
+cd mycase
+case.setup
+preview_namelists --help (Creates namelist and other model input files for each component (by running each
+component's buildnml script))
+preview_run --help (Queries key CIME shell commands (mpirun and batch submission))
+case.build
+case.submit
+
+# Allows querying variables from env_*xml files and listing all available variables
+xmlquery --help (Allows querying variables from env_*xml files and listing all available variables.)
+xmlquery COMP_CLASSES
+xmlquery JOB_WALLCLOCK_TIME (example)
+xmlquery TOTALPES
+xmlquery NTASKS
+xmlquery NTHRDS
+xmlquery MAX_TASKS_PER_NODE
+
+# Displays information about available compsets, component settings, grids, resolutions and/or machines.
+query_config --help
+query_config --machines
+query_config --compsets
+query_config --grids
+query_config --components
+query_config -s --compsets
+
+# Basic Tutorial
+# https://www.cesm.ucar.edu/events/tutorials/2021/files/day2_basicmod_cesm2_2021.pdf
+# https://www.cesm.ucar.edu/models/cesm2/settings/current/index.html
+
+# Quickstart Guide
+# https://escomp.github.io/CESM/versions/cesm2.2/html/
+
+
+-------------------------
+August 2022
 
 Re: [rockfish #166008] CESM set env
 
@@ -24,11 +142,11 @@ cd ~/mycase
 
 case.setup
 
-./preview_namelists --help (Creates namelist and other model input files for each component (by running each
+preview_namelists --help (Creates namelist and other model input files for each component (by running each
 
 component's buildnml script))
 
-./preview_run --help (Queries key CIME shell commands (mpirun and batch submission))
+preview_run --help (Queries key CIME shell commands (mpirun and batch submission))
 
 case.build
 
@@ -81,15 +199,15 @@ this time the run was terminated because of "invalid dependencies"
 I am cleaning up again, and rebuilding
 ---------------------------------------------------------------------------------- 
 
-By the way. Ricardo found this command called ./preview_namelists.
+By the way. Ricardo found this command called preview_namelists.
 
 It is not required to run this manually: namelists will be generated automatically when the run starts. But, it can be useful to review the namelists before submitting the case.
 
 You may use it to set ~/.cime/config_pes.xml, can’t you?
 
-$ ./preview_namelists –help
+preview_namelists –help
 
-$ ./preview_namelists -d-debug
+preview_namelists -d-debug
 
 This last will print debug information (very verbose) to file /scratch16/agnanad1/cesm/be21BHISTf09g17CMIP6Historical01/preview_namelists.log
 
@@ -102,7 +220,7 @@ Ricardo performed the following commands:
 
 cd /scratch16/agnanad1/cesm/be21BHISTf09g17CMIP6Historical01
 case.setup.  ( Did you run it? )
-./preview_run
+preview_run
 case.build
  
 
@@ -178,9 +296,6 @@ Traceback (most recent call last):
   File "/data/apps/linux-centos8-cascadelake/gcc-9.3.0/anaconda3-2020.07-i7qavhiohb2uwqs4eqjeefzx3kp5jqdu/lib/python3.8/xml/etree/ElementTree.py", line 595, in parse
     self._root = parser._parse_whole(source)
 xml.etree.ElementTree.ParseError: junk after document element: line 68, column 2
-[mpradal1@c048 scripts]$
-
- 
 
 Le jeu. 21 juil. 2022 à 12:44, Ricardo de Souza Jacomini via RT <help@rockfish.jhu.edu> a écrit :
 
