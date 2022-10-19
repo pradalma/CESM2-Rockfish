@@ -1,0 +1,413 @@
+Where are we now?
+
+
+Re: [rockfish #166008] CESM set env
+
+Ricardo de Souza Jacomini 
+
+Here is a case example with some commands and url, which I believe will be useful for you.
+
+# Case example
+
+create_newcase --case ~/mycase --compset X --res f19_g16
+
+cd ~/mycase
+
+case.setup
+
+./preview_namelists --help (Creates namelist and other model input files for each component (by running each
+
+component's buildnml script))
+
+./preview_run --help (Queries key CIME shell commands (mpirun and batch submission))
+
+case.build
+
+case.submit
+
+# Allows querying variables from env_*xml files and listing all available variables
+
+xmlquery --help
+
+xmlquery COMP_CLASSES
+
+xmlquery JOB_WALLCLOCK_TIME (example)
+
+xmlquery TOTALPES
+
+xmlquery NTASKS
+
+xmlquery NTHRDS
+
+xmlquery MAX_TASKS_PER_NODE
+
+# Displays information about available compsets, component settings, grids, resolutions and/or machines.
+
+query_config --machines
+
+query_config --compsets
+
+query_config --grids
+
+query_config --components
+
+# Basic Tutorial
+
+# https://www.cesm.ucar.edu/events/tutorials/2021/files/day2_basicmod_cesm2_2021.pdf
+
+# https://www.cesm.ucar.edu/models/cesm2/settings/current/index.html
+
+# Quickstart Guide
+
+# https://escomp.github.io/CESM/versions/cesm2.2/html/
+
+-----------------------------------------------------------------------------------------------------------------
+
+https://www.cesm.ucar.edu/events/tutorials/2021/files/day2_basicmod_cesm2_2021.pdf
+
+--------------------------------------------------------------------------------
+
+this time the run was terminated because of "invalid dependencies"
+
+I am cleaning up again, and rebuilding
+---------------------------------------------------------------------------------- 
+
+By the way. Ricardo found this command called ./preview_namelists.
+
+It is not required to run this manually: namelists will be generated automatically when the run starts. But, it can be useful to review the namelists before submitting the case.
+
+You may use it to set ~/.cime/config_pes.xml, can’t you?
+
+$ ./preview_namelists –help
+
+$ ./preview_namelists -d-debug
+
+This last will print debug information (very verbose) to file /scratch16/agnanad1/cesm/be21BHISTf09g17CMIP6Historical01/preview_namelists.log
+
+So, as you can see:
+
+Finished creating component namelists, component None models = ['ATM', 'LND', 'ICE', 'OCN', 'ROF', 'GLC', 'WAV', 'IAC', 'ESP', 'CPL'].
+
+---------------------------------------------------------------------------------------------------------------------------------
+Ricardo performed the following commands:
+
+cd /scratch16/agnanad1/cesm/be21BHISTf09g17CMIP6Historical01
+case.setup.  ( Did you run it? )
+./preview_run
+case.build
+ 
+
+Now, you need now to run case.submit command
+---------------------------------------------------------------------------------------
+
+I tried running a case this morning but ran into this error
+
+2022-08-04 10:24:19: case.run error
+ERROR: RUN FAIL: Command 'srun -n 432 /home/mpradal1/scr16_agnanad1/cesm/OUTPUT/be21BHISTf09g17CMIP6Historical01/bld/cesm.exe   >> cesm.log.$LID 2>&1 ' failed
+See log file for details: /home/mpradal1/scr16_agnanad1/cesm/OUTPUT/be21BHISTf09g17CMIP6Historical01/run/cesm.log.8429155.220804-102354
+
+
+So, I change a few things, including num_tasks = TOTALPES into .cime/config_machines.xml.
+
+ 
+
+Note. If you run git clone, be sure to do these steps:
+
+ 
+
+cd ~
+git clone -b release-cesm2.2.0 https://github.com/ESCOMP/cesm.git cesm2 &&  cd cesm2 &&  ./manage_externals/checkout_externals
+cp $CESM_MODULE/fix/case_setup.py $CESMROOT/cime/config/cesm
+cp $CESM_MODULE/fix/config_inputdata.xml $CESMROOT/cime/config/cesm/config_inputdata.xml
+--------------------------------------------------------------------------------
+
+Yes but how strange that it didn’t stop the new case command when I ran it last night and then it appeared again
+--
+
+This error is related to the bad format in some XML files.
+
+xml.etree.ElementTree.ParseError: junk after document element: line 68, column 2
+I trying to find which one.
+---------------------------------------------------------------------------------
+here it is 
+
+$ create_newcase --case /scratch16/agnanad1/cesm/be21BHISTf09g17CMIP6Historical01 --compset BHIST --res f09_g17 --mach rf1
+
+ 
+
+Le jeu. 21 juil. 2022 à 12:58, Ricardo de Souza Jacomini via RT <help@rockfish.jhu.edu> a écrit :
+-----
+Could you send all the syntax for the create_newcase command you are using, I would like to replicate it.
+---------------------------------------------------------------------------------------------------------------------
+
+
+So the SLURM controller let me run the salloc command, after which I executed the create_newcase command, it failed with the same error message as yesterday ********************************************************************************************************************************
+
+Using project from .cime/config: agnanad1
+Using charge_account from .cime/config: agnanad1
+cesm model version found: cesm2.2.0
+Batch_system_type is slurm
+Traceback (most recent call last):
+  File "/home/mpradal1/cesm2/cime/scripts/create_newcase", line 243, in <module>
+    _main_func(__doc__)
+  File "/home/mpradal1/cesm2/cime/scripts/create_newcase", line 230, in _main_func
+    case.create(casename, srcroot, compset, grid, user_mods_dir=user_mods_dir,
+  File "/home/mpradal1/cesm2/cime/scripts/Tools/../../scripts/lib/CIME/case/case.py", line 1634, in create
+    self.configure(compset_name, grid_name, machine_name=machine_name,
+  File "/home/mpradal1/cesm2/cime/scripts/Tools/../../scripts/lib/CIME/case/case.py", line 1107, in configure
+    batch = Batch(batch_system=batch_system_type, machine=machine_name, files=files,
+  File "/home/mpradal1/cesm2/cime/scripts/Tools/../../scripts/lib/CIME/XML/batch.py", line 32, in __init__
+    GenericXML.__init__(self, infile, schema=schema)
+  File "/home/mpradal1/cesm2/cime/scripts/Tools/../../scripts/lib/CIME/XML/generic_xml.py", line 64, in __init__
+    self.read(infile, schema)
+  File "/home/mpradal1/cesm2/cime/scripts/Tools/../../scripts/lib/CIME/XML/generic_xml.py", line 102, in read
+    self.read_fd(fd)
+  File "/home/mpradal1/cesm2/cime/scripts/Tools/../../scripts/lib/CIME/XML/generic_xml.py", line 126, in read_fd
+    self.tree = ET.parse(fd)
+  File "/data/apps/linux-centos8-cascadelake/gcc-9.3.0/anaconda3-2020.07-i7qavhiohb2uwq s4eqjeefzx3kp5jqdu/lib/python3.8/xml/etree/ElementTree.py", line 1202, in parse
+    tree.parse(source, parser)
+  File "/data/apps/linux-centos8-cascadelake/gcc-9.3.0/anaconda3-2020.07-i7qavhiohb2uwqs4eqjeefzx3kp5jqdu/lib/python3.8/xml/etree/ElementTree.py", line 595, in parse
+    self._root = parser._parse_whole(source)
+xml.etree.ElementTree.ParseError: junk after document element: line 68, column 2
+[mpradal1@c048 scripts]$
+
+ 
+
+Le jeu. 21 juil. 2022 à 12:44, Ricardo de Souza Jacomini via RT <help@rockfish.jhu.edu> a écrit :
+
+So sorry, we are facing an intermittent error as SLURM our system team is working on it.
+---------------------------------------------------------------------------------------------------------------------
+here is the error 
+[mpradal1@login02 scripts]$ salloc -J cesm -N 1 -n 2 --time=1:00:00 srun --pty bash
+salloc: error: Job submit/allocate failed: Socket timed out on send/recv operation
+
+-----------------------------------------------------------------------------------------------------------------
+First, you need to run salloc command to give access in an interactive mode to a compute node.
+
+$ salloc -J cesm -N 1 -n 2 --time=1:00:00 srun --pty bash
+
+After, you receive an allocate node you can run the create_newcase command.
+-----------
+I am not sure I understand
+
+should I type  "salloc -c 2 -t 460 srun --pty bash -l" or on the create_newcase command?
+----------
+Wow, how weird.
+Please, could you try it in an interact mode (computer node)?
+$ salloc -c 2 -t 460 srun --pty bash -l
+------------------- 
+
+I logged out of Rockfish and logged back in and my create_newcase is failing with the same error message as it was earlier today
+
+-------------------------------------------
+
+So, I change a few things, including num_tasks = TOTALPES into .cime/config_machines.xml.
+
+ 
+
+Note. If you run git clone, be sure to do these steps:
+
+ 
+
+cd ~
+git clone -b release-cesm2.2.0 https://github.com/ESCOMP/cesm.git cesm2 &&  cd cesm2 &&  ./manage_externals/checkout_externals
+cp $CESM_MODULE/fix/case_setup.py $CESMROOT/cime/config/cesm
+cp $CESM_MODULE/fix/config_inputdata.xml $CESMROOT/cime/config/cesm/config_inputdata.xml
+ 
+-----------------------------------
+Looks like it is running for me too now. How weird.
+
+Le mer. 20 juil. 2022 à 14:07, Ricardo de Souza Jacomini via RT <help@rockfish.jhu.edu> a écrit :
+Weird, I just create a compset to machine rf1.
+
+Which command are you using, send when this happing?
+--------------------------------------------------
+
+
+The new user just needs copy the ~/.cime folder, change some personal information, like email. The cesm module it is ready to use.
+
+ 
+
+Please, let me know if it works for they as well.
+
+ 
+
+Ricardo S. Jacomini
+
+sent from my mobile device
+
+ 
+
+From: Pradal M-A via RT <help@rockfish.jhu.edu>
+Sent: Wednesday, July 13, 2022, 2:49 PM
+To: Ricardo de Souza Jacomini <ricardo.jacomini@jhu.edu>
+Subject: Re: [rockfish #166008] CESM set env
+
+
+Ticket URL: https://help.marcc.jhu.edu/Ticket/Display.html?id=166008
+
+Hi Ricardo,
+
+ 
+
+We have a new group member (In Anand Gnanadesikan's lab : agnanad1) who wants to install and run CESM.
+
+I am going through the thread of emails you and I exchanged to get me setup but I am not sure that I have to repeat all steps.
+
+So far he has downloaded cesm, edited his bashrc to load the module cesm2.x
+
+In an email I have "conda activate release-cesm2.13"
+
+Does he have to activate that environment? If yes, I don't remember where it is saved...
+
+ 
+
+Le mar. 17 mai 2022 à 17:23, Ricardo de Souza Jacomini via RT <help@rockfish.jhu.edu> a écrit :
+
+Hi Marie-Aude, good afternoon.
+
+ 
+
+1. You must run this command to activate the environment:
+
+$ ml anaconda
+
+$ conda activate release-cesm2.1.3
+
+ 
+
+# These 3 export below should be added in your .bashrc
+
+export CIME_MODEL=cesm
+
+export CIMEROOT=$HOME/my_cesm_sandbox
+
+ 
+
+# This will add the commands found in /home/mpradal1/my_cesm_sandbox/cime/scripts to your PATH
+
+# Commands like create_test, it can be run in any directory
+
+ 
+
+export PATH=$PATH:$CIMEROOT/cime/scripts/
+
+ 
+
+2. Add the machine  <Rockfish-rf1> into  ~/my_cesm_sandbox/cime/config/cesm/machines/config_machines.xml file
+
+ 
+
+You must change the path to outputs as you need (red highlighted), try to use ${HOME}/scr16_$(id -gn) or  ${HOME}/scr4_$(id -gn)  (Note: scr4 for small files 4mb size and scr16 for larger file size)
+
+ 
+
+<machine MACH="Rockfish-rf1">
+
+    <DESC>Rockfish (RF) cluster at The Advanced Research Computing at Hopkins (ARCH), OS is Linux (intel), batch system is SLURM</DESC>
+
+    <OS>LINUX</OS>
+
+    <COMPILERS>gnu</COMPILERS>
+
+    <MPILIBS>openmpi,mpi-serial</MPILIBS>
+
+    <CIME_OUTPUT_ROOT>/global/scratch/$ENV{USER}</CIME_OUTPUT_ROOT>
+
+    <DIN_LOC_ROOT>/global/scratch/$ENV{USER}/cesm_input_datasets/</DIN_LOC_ROOT>
+
+    <DIN_LOC_ROOT_CLMFORC>/global/scratch/$ENV{USER}/cesm_input_datasets/atm/datm7</DIN_LOC_ROOT_CLMFORC>
+
+    <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/cesm_archive/$CASE</DOUT_S_ROOT>
+
+    <BASELINE_ROOT>$CIME_OUTPUT_ROOT/cesm_baselines</BASELINE_ROOT>
+
+    <CCSM_CPRNC>/$CIME_OUTPUT_ROOT/cesm_tools/cprnc/cprnc</CCSM_CPRNC>
+
+    <GMAKE_J>4</GMAKE_J>
+
+    <BATCH_SYSTEM>slurm</BATCH_SYSTEM>
+
+    <SUPPORTED_BY>mpradal1 at jhu dot edu</SUPPORTED_BY>
+
+    <MAX_TASKS_PER_NODE>16</MAX_TASKS_PER_NODE>
+
+    <MAX_MPITASKS_PER_NODE>16</MAX_MPITASKS_PER_NODE>
+
+    <PROJECT_REQUIRED>TRUE</PROJECT_REQUIRED>
+
+    <mpirun mpilib="default">
+
+      <executable>mpirun</executable>
+
+      <arguments>
+
+        <arg name="num_tasks">-np {{ total_tasks }}</arg>
+
+        <arg name="tasks_per_node"> -npernode $MAX_MPITASKS_PER_NODE </arg>
+
+      </arguments>
+
+    </mpirun>
+
+    <module_system type="module">
+
+      <init_path lang="sh">/etc/profile.d/modules.sh</init_path>
+
+      <init_path lang="csh">/etc/profile.d/modules.csh</init_path>
+
+      <init_path lang="perl">/cm/local/apps/environment-modules/4.4.0/init/perl.pm</init_path>
+
+      <init_path lang="python">/cm/local/apps/environment-modules/4.4.0/init/python.py</init_path>
+
+      <cmd_path lang="sh">module</cmd_path>
+
+      <cmd_path lang="csh">module</cmd_path>
+
+      <cmd_path lang="perl">/cm/local/apps/environment-modules/4.4.0/bin/modulecmd perl</cmd_path>
+
+      <cmd_path lang="python">/cm/local/apps/environment-modules/4.4.0/bin/modulecmd python</cmd_path>
+
+      <modules>
+
+        <command name="purge"/>
+
+        <command name="load">cmake</command>
+
+        <command name="load">perl xml-libxml switch python/2.7</command>
+
+      </modules>
+
+      <modules compiler="gnu">
+
+        <command name="load">gcc/9.3.0</command>
+
+        <command name="load">openmpi/3.1.6</command>
+
+        <command name="load">cmake/3.18.4</command>
+
+        <command name="load">netcdf-c/4.7.4</command>
+
+        <command name="load">netcdf-fortran/4.5.3</command>
+
+        <command name="load">intel-mkl/2020.3.279-tbb</command>
+
+        <command name="load">hdf5/1.10.7</command>
+
+       <modules compiler="gnu" mpilib="!mpi-serial">
+
+        <command name="load">openmpi/4.1.1</command>
+
+        <command name="load">intel-mkl/2020.3.279-tbb</command>
+
+        <command name="load">cmake/3.18.4</command>
+
+       </modules>
+
+      </modul
+
+    </module_system>
+
+  </machine>
+
+-----------------------------------------------------------------------------------------------------------------------------------------
