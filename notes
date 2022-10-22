@@ -9,6 +9,9 @@ looked content found https://github.com/ESMCI/ccs_config_cesm/blob/main/config_i
 saved original config_inputdata.xml in current directory under name original_config_inputdata.xml
 edited config_inputdata.xml following forum tips to add /
 still does not work 
+edited to put svn first, delete all other protocols: seems to work
+case.submit
+
 
 Could not connect to repo 'ftp://ftp.cgd.ucar.edu/cesm/inputdata/'
 This is most likely either a proxy, or network issue .
