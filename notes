@@ -1,7 +1,73 @@
 Where are we now?
 
+OCTOBER 22 2022
+
+vi config_inputdata.xml
+[mpradal1@login01 cesm]$ pwd
+/home/mpradal1/cesm2/cime/config/cesm/
+looked content found https://github.com/ESMCI/ccs_config_cesm/blob/main/config_inputdata.xml
+saved original config_inputdata.xml in current directory under name original_config_inputdata.xml
+edited config_inputdata.xml following forum tips to add /
+still does not work 
+
+Could not connect to repo 'ftp://ftp.cgd.ucar.edu/cesm/inputdata/'
+This is most likely either a proxy, or network issue .
+
 
 OCTOBER 20 2022
+[mpradal1@login03 cesm]$ create_newcase --case mariecase --compset X --res f19_g16
+Compset longname is 2000_XATM_XLND_XICE_XOCN_XROF_XGLC_XWAV
+Compset specification file is /home/mpradal1/cesm2/cime/src/drivers/mct/cime_config/config_compsets.xml
+Automatically adding SIAC to compset
+Automatically adding SESP to compset
+Compset forcing is 1972-2004
+ATM component is Dead atm component
+LND component is Dead land component
+ICE component is Dead ice component
+OCN component is Dead ocean component
+ROF component is Dead river component
+GLC component is Dead land-ice component
+WAV component is Dead wave component
+IAC component is Stub iac component
+ESP component is Stub external system processing (ESP) component
+Pes     specification file is /home/mpradal1/cesm2/cime/src/drivers/mct/cime_config/config_pes.xml
+Could not find machine match for 'login03.cm.cluster' or 'login03'
+Machine is rf1
+Pes setting: grid          is a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05_g%gland4_w%ww3a_z%null_m%gx1v6
+Pes setting: compset       is 2000_XATM_XLND_XICE_XOCN_XROF_XGLC_XWAV_SIAC_SESP
+Pes setting: tasks       is {'NTASKS_ATM': -1, 'NTASKS_ROF': -1, 'NTASKS_OCN': -1, 'NTASKS_ICE': -1, 'NTASKS_CPL': -1, 'NTASKS_LND': -1, 'NTASKS_GLC': -1, 'NTASKS_WAV': -1, 'NTASKS_IAC': -1, 'NTASKS_ESP': -1}
+Pes setting: threads     is {'NTHRDS_ATM': 1, 'NTHRDS_LND': 1, 'NTHRDS_ROF': 1, 'NTHRDS_ICE': 1, 'NTHRDS_OCN': 1, 'NTHRDS_GLC': 1, 'NTHRDS_WAV': 1, 'NTHRDS_IAC': 1, 'NTHRDS_ESP': 1, 'NTHRDS_CPL': 1}
+Pes setting: rootpe      is {'ROOTPE_ATM': 0, 'ROOTPE_ROF': 0, 'ROOTPE_ICE': 0, 'ROOTPE_OCN': 0, 'ROOTPE_CPL': 0, 'ROOTPE_LND': 0, 'ROOTPE_GLC': 0, 'ROOTPE_WAV': 0, 'ROOTPE_IAC': 0, 'ROOTPE_ESP': 0}
+Pes setting: pstrid      is {}
+Pes other settings: {}
+Pes comments: none
+ Compset is: 2000_XATM_XLND_XICE_XOCN_XROF_XGLC_XWAV_SIAC_SESP
+ Grid is: a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05_g%gland4_w%ww3a_z%null_m%gx1v6
+ Components in compset are: ['xatm', 'xlnd', 'xice', 'xocn', 'xrof', 'xglc', 'xwav', 'siac', 'sesp']
+
+*********************************************************************************************************************************
+This compset and grid combination is not scientifically supported, however it is used in 17 tests.
+*********************************************************************************************************************************
+
+Using project from .cime/config: agnanad1
+Using charge_account from .cime/config: agnanad1
+cesm model version found: cesm2.2.0
+Batch_system_type is slurm
+job is case.run USER_REQUESTED_WALLTIME None USER_REQUESTED_QUEUE None WALLTIME_FORMAT %H:%M:%S
+job is case.st_archive USER_REQUESTED_WALLTIME None USER_REQUESTED_QUEUE None WALLTIME_FORMAT %H:%M:%S
+ Creating Case directory /scratch16/agnanad1/cesm/mariecase
+[mpradal1@login03 cesm]$
+[mpradal1@login03 cesm]$ Could not find machine match for 'login03.cm.cluster' or 'login03'
+-bash: Could: command not found
+[mpradal1@login03 cesm]$ Machine is rf1
+-bash: Machine: command not found
+[mpradal1@login03 cesm]$
+[mpradal1@login03 cesm]$ vi /home/mpradal1/cesm2/cime/src/drivers/mct/cime_config/config_compsets.xml
+checked. seemed ok?
+[mpradal1@login03 cesm]$ vi  /home/mpradal1/cesm2/cime/src/drivers/mct/cime_config/config_pes.xml
+checked: no machine rf1 defined in there
+
+
 testing my memory:
 
 cd /scratch16/agnanad1/cesm/be21BHISTf09g17CMIP6Historical01/
@@ -527,8 +593,6 @@ You must change the path to outputs as you need (red highlighted), try to use ${
         <command name="load">cmake/3.18.4</command>
 
        </modules>
-
-      </modul
 
     </module_system>
 
