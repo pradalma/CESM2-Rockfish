@@ -1,5 +1,11 @@
 Where are we now?
 
+OCTOBER 27 2022
+-compset B1850 --res f19_g17 --machine rockfish --pesfile ~/.cime/config_pes.xml
+results are in /scratch16/agnanad1/cesm/OUTPUT/testb1850_01/run
+Is there an archive at NCAR we can download and use to compare to our results?
+
+
 OCTOBER 22 2022
 
 vi config_inputdata.xml
