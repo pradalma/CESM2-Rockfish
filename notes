@@ -5,6 +5,11 @@ OCTOBER 27 2022
 results are in /scratch16/agnanad1/cesm/OUTPUT/testb1850_01/run
 Is there an archive at NCAR we can download and use to compare to our results?
 
+RJ>>If you see in the config_machines.xml file, there is a arg (<mpirun mpilib="mpich" unit_testing="false">) I set up it as false because I did install the requirement packages for that. Also, I did find any information how to do it. May be now should be a good time.
+RJ>>You can try it; you should change it from unit_testing="false" to unit_testing="true”. And run that test again. I am not sure if it will work.
+RJ>>Please, let me know if it works or if you find anything detail about how to set cesm to perform unit testing.
+
+ 
 
 OCTOBER 22 2022
 
