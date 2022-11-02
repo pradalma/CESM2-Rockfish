@@ -1,5 +1,72 @@
 Where are we now?
 
+OCTOBER 29 2022
+
+ml restore
+Resetting modules to system default. Reseting $MODULEPATH back to system default. All extra directories will be removed from $MODULEPATH.
+[mpradal1@login02 PyCECT]$ ml nco
+[mpradal1@login02 PyCECT]$ ./../../../tools/statistical_ensemble_test/addmetadata.sh --caseroot /scratch16/agnanad1/cesm/case.cesm_tag.uf.000 --histfile /scratch16/agnanad1/cesm/OUTPUT/case.cesm_tag.uf.000/run/case.cesm_tag.uf.000.cam.h0.0001-01-01-00000.nc
+[mpradal1@login02 PyCECT]$ ./../../../tools/statistical_ensemble_test/addmetadata.sh --caseroot /scratch16/agnanad1/cesm/case.cesm_tag.uf.001 --histfile /scratch16/agnanad1/cesm/OUTPUT/case.cesm_tag.uf.001/run/case.cesm_tag.uf.001.cam.h0.0001-01-01-00000.nc
+[mpradal1@login02 PyCECT]$ ./../../../tools/statistical_ensemble_test/addmetadata.sh --caseroot /scratch16/agnanad1/cesm/case.cesm_tag.uf.002 --histfile /scratch16/agnanad1/cesm/OUTPUT/case.cesm_tag.uf.002/run/case.cesm_tag.uf.002.cam.h0.0001-01-01-00000.nc
+
+CESM2 | Verification (ucar.edu)
+CESM2 Ensemble Verification
+Please see CESM2 Python Tools for details or for help with this form see DiscussCESM
+
+NOTE: This tool currently supports CESM ECT version 2.0.0, and CESM UF-ECT versions 2.0.0 through 2.2.0
+
+
+DO NOT REFRESH YOUR BROWSER OR GO BACK
+* This could take up to 10 minutes depending on the current processing *
+   Run 1 uploading
+5.699999999999999%
+   Run 2 waiting
+   Run 3 waiting
+
+CESM Version Tested: CESM 2.2.0
+Metadata retrieved from: case.cesm_tag.uf.000.cam.h0.0001-01-01-00000.nc
+
+*********************************************** 
+PCA Test Results
+*********************************************** 
+ 
+Summary: 2 PC scores failed at least 2 runs:  [34, 35]
+ 
+These runs PASSED according to our testing criterion.
+PC 13: failed 1 runs  [2]
+PC 34: failed 2 runs  [1, 2]
+PC 35: failed 2 runs  [1, 2]
+PC 47: failed 1 runs  [2]
+ 
+Run 1: 2 PC scores failed  [34, 35]
+Run 2: 4 PC scores failed  [13, 34, 35, 47]
+Run 3: 0 PC scores failed  []
+ 
+Testing complete.
+
+
+OCTOBER 28 2022
+
+testing the port to Rockfish
+following these instructions: https://www.cesm.ucar.edu/models/cesm2/python-tools/
+
+In /home/mpradal1/cesm2/cime/scripts/tests/PyCECT
+[mpradal1@login02 PyCECT]$ python ../../../../cime/tools/statistical_ensemble_test/ensemble.py --case /scratch16/agnanad1/cesm/case.cesm_tag.uf.000 --ect cam --uf --mach rockfish --compset F2000climo --res f19_f19_mg17 --compiler gnu
+tail : 
+Loading input file list: 'Buildconf/mosart.input_data_list'
+Loading input file list: 'Buildconf/cam.input_data_list'
+Check case OK
+submit_jobs case.run
+Submit job case.run
+Submitting job script sbatch --mail-user mpradal1@jhu.edu --mail-type all .case.run --resubmit
+Submitted job id is 9829448
+Submitted job case.run with id 9829448
+STATUS: ---CAM-ECT VERIFICATION CASES COMPLETE---
+Set up three cases using the following pertlim values:
+-0.821d-13   0.427d-13   -0.965d-13
+[mpradal1@login02 PyCECT]$
+
+
 OCTOBER 27 2022
 -compset B1850 --res f19_g17 --machine rockfish --pesfile ~/.cime/config_pes.xml
 results are in /scratch16/agnanad1/cesm/OUTPUT/testb1850_01/run
